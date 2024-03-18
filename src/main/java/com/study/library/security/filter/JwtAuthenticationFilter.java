@@ -4,6 +4,8 @@ import com.study.library.jwt.JwtProvider;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
@@ -32,6 +34,14 @@ public class JwtAuthenticationFilter extends GenericFilter {
                 response.sendError(HttpStatus.UNAUTHORIZED.value()); //인증실패
                 return;
             }
+            Authentication authentication = jwtProvider.getAuthentication(claims);
+
+            if(authentication == null) {
+                response.sendError(HttpStatus.UNAUTHORIZED.value()); //인증실패
+                return;
+            }
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         // 전처리
         filterChain.doFilter(request, response);
