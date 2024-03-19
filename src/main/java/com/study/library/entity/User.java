@@ -30,15 +30,17 @@ public class User {
     private List<RoleRegister> roleRegisters;
 
     public List<SimpleGrantedAuthority> getAuthorities() {
-//        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//        for(RoleRegister roleRegister : roleRegisters) {
-//            authorities.add(new SimpleGrantedAuthority(roleRegister.getRole().getRoleName()));
-//        }
-//        return authorities;
-        return roleRegisters.stream()
-                .map(roleRegister ->
-                        new SimpleGrantedAuthority(roleRegister.getRole().getRoleName()))
-                .collect(Collectors.toList());
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        for(RoleRegister roleRegister : roleRegisters) {
+            authorities.add(new SimpleGrantedAuthority(roleRegister.getRole().getRoleName()));
+        }
+
+        return authorities;
+//        return roleRegisters.stream()
+//                .map(roleRegister ->
+//                        new SimpleGrantedAuthority(roleRegister.getRole().getRoleName()))
+//                .collect(Collectors.toList());
     }
 
     public PrincipalUser toPrincipalUser() {
