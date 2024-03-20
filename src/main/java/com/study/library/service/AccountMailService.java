@@ -1,7 +1,14 @@
 package com.study.library.service;
 
+import com.study.library.entity.RoleRegister;
 import com.study.library.jwt.JwtProvider;
+import com.study.library.repository.UserMapper;
 import com.study.library.security.PrincipalUser;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.Map;
 
 @Service
 public class AccountMailService {
@@ -21,6 +29,8 @@ public class AccountMailService {
     private JavaMailSender javaMailSender;
     @Autowired
     private JwtProvider jwtProvider;
+    @Autowired
+    private UserMapper userMapper;
 
     @Value("${spring.mail.address}")
     private String fromMailAddress;
@@ -33,6 +43,7 @@ public class AccountMailService {
         boolean result = false;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
+        int userId = principalUser.getUserId();
         String toMailAddress = principalUser.getEmail();
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -42,7 +53,7 @@ public class AccountMailService {
             helper.setFrom(fromMailAddress);
             helper.setTo(toMailAddress);
 
-            String authMailToken = jwtProvider.generateAuthMailToken(toMailAddress);
+            String authMailToken = jwtProvider.generateAuthMailToken(userId, toMailAddress);
 
             StringBuilder mailContent = new StringBuilder();
             mailContent.append("<div>");
@@ -60,5 +71,31 @@ public class AccountMailService {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public Map<String, Object> authenticate(String token) {
+        Claims claims = null;
+        Map<String, Object> resultMap = null;
+        // ExpiredJwtException => 토큰 유효기간 만료
+        // MalformedJwtException => 위조, 변조
+        // SignatureException => 형식, 길이 오류
+        // IllegalArgumentException => null 또는 빈값
+        try {
+            claims = jwtProvider.getClaims(token);
+            int userId = Integer.parseInt(claims.get("userId").toString());
+            RoleRegister roleRegister = userMapper.findRoleRegisterByUserIdAndRoleId(userId, 2);
+            if(roleRegister != null) {
+                resultMap = Map.of("status", true, "message", "이미 인증이 완료된 메일입니다.");
+            } else {
+                userMapper.saveRole(userId, 2);
+                resultMap = Map.of("status", true, "message", "인증 완료.");
+            }
+        } catch (ExpiredJwtException e) {
+            resultMap = Map.of("status", false, "message", "인증 시간을 초과하였습니다.\n인증 메일을 다시 받으세요.");
+        } catch (JwtException e) {
+            resultMap = Map.of("status", false, "message", "잘못된 접근입니다.\n인증 메일을 다시 받으세요.");
+        }
+
+        return resultMap;
     }
 }

@@ -5,6 +5,10 @@
     <title>인증 결과 페이지</title>
 </head>
 <body>
-    <h1>인증 결과 페이지</h1>
+    <script th:inline="javascript">
+        let message = [[${message}]]
+        alert(message);
+        window.close();
+    </script>
 </body>
 </html>
