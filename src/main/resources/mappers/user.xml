@@ -123,4 +123,17 @@
             oat.oauth2_name = #{oAuth2Name}
     </select>
 
+    <insert id="saveOAuth2" parameterType="com.study.library.entity.OAuth2">
+        insert into oauth2_tb
+        values(0, #{oAuth2Name}, #{userId}, #{providerName}, now(), now())
+    </insert>
+
 </mapper>
+
+
+
+
+
+
+
+

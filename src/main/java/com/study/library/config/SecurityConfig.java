@@ -55,6 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .oauth2Login()
                 .successHandler(oAuth2SuccessHandler)
                 .userInfoEndpoint()
+                // OAuth2로그인 토큰검사
                 .userService(oAuth2PrincipalUserService);
 
     }

@@ -17,10 +17,8 @@ import java.io.IOException;
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    @Value("${server.deploy-address}")
-    private String serverAddress;
-    @Value("${server.port}")
-    private String port;
+    @Value("${client.deploy-address}")
+    private String clientAddress;
 
     @Autowired
     private UserMapper userMapper;
@@ -36,7 +34,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             DefaultOAuth2User oAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
             String providerName = oAuth2User.getAttribute("provider").toString();
 
-            response.sendRedirect("http://" + serverAddress + ":" + port + "/");
+            response.sendRedirect("http://" + clientAddress + "/auth/oauth2?name=" + name + "&provider=" + providerName);
             return;
         }
 
