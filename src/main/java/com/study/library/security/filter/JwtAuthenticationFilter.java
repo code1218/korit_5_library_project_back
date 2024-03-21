@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends GenericFilter {
 
             try {
                 claims = jwtProvider.getClaims(removedBearerToken);
-            } catch (JwtException e) {
+            } catch (Exception e) {
                 response.sendError(HttpStatus.UNAUTHORIZED.value()); //인증실패
                 return;
             }
