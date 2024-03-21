@@ -20,6 +20,7 @@ public class PermitAllFilter extends GenericFilter {
                 "/error",
                 "/server",
                 "/auth",
+                "/oauth2",
                 "/mail/authenticate"
         );
 
