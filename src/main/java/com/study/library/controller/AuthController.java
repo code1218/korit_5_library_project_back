@@ -46,6 +46,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.signin(signinReqDto));
     }
 
+    @ParamsPrintAspect
     @PostMapping("/oauth2/merge")
     public ResponseEntity<?> oAuth2Merge(@RequestBody OAuth2MergeReqDto oAuth2MergeReqDto) {
         authService.oAuth2Merge(oAuth2MergeReqDto);

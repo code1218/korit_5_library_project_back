@@ -73,6 +73,8 @@ public class AuthService {
     public void oAuth2Merge(OAuth2MergeReqDto oAuth2MergeReqDto) {
         User user = userMapper.findUserByUsername(oAuth2MergeReqDto.getUsername());
 
+        System.out.println(oAuth2MergeReqDto);
+
         if(user == null) {
             throw new UsernameNotFoundException("사용자 정보를 확인하세요");
         }
