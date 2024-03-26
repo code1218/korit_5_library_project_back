@@ -33,6 +33,15 @@ public class AdminBookController {
     @ParamsPrintAspect
     @GetMapping("/books")
     public ResponseEntity<?> searchBooks(SearchBookReqDto searchBookReqDto) {
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(bookService.searchBooks(searchBookReqDto));
     }
 }
+
+
+
+
+
+
+
+
+
